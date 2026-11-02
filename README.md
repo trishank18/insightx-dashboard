@@ -56,7 +56,7 @@ npm run build
 npm run preview
 ```
 
-`npm test` is currently configured as a Vite production-build check; it is not a separate unit-test suite.
+`npm test` runs the Node.js feature tests for transaction search, sorting, pagination, CSV formatting, and mock API data, then creates a Vite production build.
 
 ### IDE and repository
 
@@ -82,6 +82,32 @@ See [docs/wireframes.md](docs/wireframes.md) for the desktop layout sketch, comp
 ## Mock data service
 
 `src/services/api.js` exports `fetchDashboard`, `fetchTransactions`, and `fetchCustomers`. They return promises with simulated latency and deterministic retail-order fixtures spanning January 2023 through December 2025. The data follows a Sample Superstore-style shape and is bundled locally for reliable offline use.
+
+## Testing and debugging
+
+Run the complete check with:
+
+```bash
+npm test
+```
+
+The automated tests cover case-insensitive search and no-match behavior, numeric/text/date sorting, empty and out-of-range pagination, CSV escaping, and consistency of mock dashboard/customer data. The same command verifies that Vite can produce a production build. The dashboard has also been opened at desktop and mobile sizes to review route rendering, chart visibility, and responsive layout.
+
+## Screenshots
+
+These screenshots show the running app at desktop and mobile sizes:
+
+### Overview
+
+![InsightX Overview dashboard](docs/screenshots/overview.png)
+
+### Analytics
+
+![InsightX Analytics charts](docs/screenshots/analytics.png)
+
+### Mobile Overview
+
+![InsightX mobile dashboard](docs/screenshots/mobile.png)
 
 ## Routes
 
