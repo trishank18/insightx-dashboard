@@ -11,7 +11,7 @@ The Customers page reports New and Returning customer segments. The CSV has no i
 ## Dataset checks
 
 - 1,000 valid sale rows across 13 months, January 2023 to January 2024.
-- Total sales: **$5,019,265.23**; total units sold: **25,355**.
+- Total sales: **₹5,019,265.23**; total units sold: **25,355**. Monetary values use Indian rupees (INR).
 - Four regions, two sales channels, four product categories, and two customer segments.
 - The Vite development endpoint returned HTTP 200 and 1,001 lines including the header.
 - Production build emitted `dist/sales_data.csv` at 105.08 kB.

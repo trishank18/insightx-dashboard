@@ -47,17 +47,17 @@ export function paginateTransactions(rows, page = 1, pageSize = 5) {
 }
 
 export function transactionsToCsv(rows) {
-  return rowsToCsv(["Sale", "Product ID", "Date", "Sales rep", "Region", "Category", "Sales amount", "Units sold", "Unit cost", "Unit price", "Customer type", "Discount", "Payment method", "Sales channel"], rows.map((row) => ({
+  return rowsToCsv(["Sale", "Product ID", "Date", "Sales rep", "Region", "Category", "Sales amount (INR)", "Units sold", "Unit cost (INR)", "Unit price (INR)", "Customer type", "Discount", "Payment method", "Sales channel"], rows.map((row) => ({
     Sale: row.id,
     "Product ID": row.productId,
     Date: row.date,
     "Sales rep": row.salesRep,
     Region: row.region,
     Category: row.category,
-    "Sales amount": row.amount,
+    "Sales amount (INR)": row.amount,
     "Units sold": row.quantity,
-    "Unit cost": row.unitCost,
-    "Unit price": row.unitPrice,
+    "Unit cost (INR)": row.unitCost,
+    "Unit price (INR)": row.unitPrice,
     "Customer type": row.customerType,
     Discount: row.discount,
     "Payment method": row.paymentMethod,
@@ -77,32 +77,32 @@ export function monthlyRevenueCsv(transactions) {
     const date = Number.isNaN(timestamp) ? null : new Date(timestamp);
     const key = date ? `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}` : "unknown";
     const month = date ? date.toLocaleDateString("en-US", { month: "short", year: "numeric", timeZone: "UTC" }) : "Unknown";
-    const current = monthly.get(key) ?? { Month: month, "Order count": 0, Revenue: 0 };
+    const current = monthly.get(key) ?? { Month: month, "Order count": 0, "Revenue (INR)": 0 };
     current["Order count"] += 1;
-    current.Revenue += Number(transaction.amount) || 0;
+    current["Revenue (INR)"] += Number(transaction.amount) || 0;
     monthly.set(key, current);
   }
 
-  const summary = [...monthly.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([, row]) => ({ ...row, Revenue: row.Revenue.toFixed(2) }));
-  return rowsToCsv(["Month", "Order count", "Revenue"], summary);
+  const summary = [...monthly.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([, row]) => ({ ...row, "Revenue (INR)": row["Revenue (INR)"].toFixed(2) }));
+  return rowsToCsv(["Month", "Order count", "Revenue (INR)"], summary);
 }
 
 export function customerSegmentCsv(customers) {
   const rows = customers.map((customer) => ({
     Segment: customer.name,
     "Sales count": customer.transactions,
-    Revenue: customer.revenue,
+    "Revenue (INR)": customer.revenue,
     "Units sold": customer.units,
     "Average discount (%)": customer.averageDiscount
   }));
-  return rowsToCsv(["Segment", "Sales count", "Revenue", "Units sold", "Average discount (%)"], rows);
+  return rowsToCsv(["Segment", "Sales count", "Revenue (INR)", "Units sold", "Average discount (%)"], rows);
 }
 
 export function salesChannelPerformanceCsv(channels) {
-  return rowsToCsv(["Sales channel", "Sales records", "Revenue", "Transaction share (%)"], channels.map((channel) => ({
+  return rowsToCsv(["Sales channel", "Sales records", "Revenue (INR)", "Transaction share (%)"], channels.map((channel) => ({
     "Sales channel": channel.name,
     "Sales records": channel.transactions,
-    Revenue: channel.revenue,
+    "Revenue (INR)": channel.revenue,
     "Transaction share (%)": channel.share
   })));
 }

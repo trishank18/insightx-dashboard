@@ -36,6 +36,7 @@ test("pagination handles empty data, invalid arguments, and pages beyond the end
 test("CSV exports valid headers, quotes commas and quotes, and handles missing values", () => {
   const csv = transactionsToCsv([{ ...rows[0], salesRep: 'Ada, "A" Lovelace', region: undefined }]);
   assert.match(csv, /^"Sale","Product ID","Date","Sales rep","Region"/);
+  assert.match(csv, /"Sales amount \(INR\)","Units sold","Unit cost \(INR\)","Unit price \(INR\)"/);
   assert.match(csv, /"Ada, ""A"" Lovelace",""/);
   assert.match(csv, /\r\n/);
 });
@@ -45,10 +46,10 @@ test("report exports have distinct schemas and monthly revenue is aggregated chr
   const customers = customerSegmentCsv([{ name: "New", transactions: 1, revenue: 90, units: 2, averageDiscount: 10 }]);
   const acquisition = salesChannelPerformanceCsv([{ name: "Online", transactions: 2, revenue: 130, share: 66.7 }, { name: "Retail", transactions: 1, revenue: 120, share: 33.3 }]);
 
-  assert.match(monthly, /^"Month","Order count","Revenue"/);
+  assert.match(monthly, /^"Month","Order count","Revenue \(INR\)"/);
   assert.ok(monthly.indexOf("Oct 2023") < monthly.indexOf("Jan 2024"));
   assert.match(monthly, /"Feb 2024","1","90\.00"/);
-  assert.match(customers, /^"Segment","Sales count","Revenue","Units sold","Average discount \(\%\)"/);
-  assert.match(acquisition, /^"Sales channel","Sales records","Revenue","Transaction share \(\%\)"/);
+  assert.match(customers, /^"Segment","Sales count","Revenue \(INR\)","Units sold","Average discount \(\%\)"/);
+  assert.match(acquisition, /^"Sales channel","Sales records","Revenue \(INR\)","Transaction share \(\%\)"/);
   assert.equal(new Set([monthly, customers, acquisition]).size, 3);
 });
