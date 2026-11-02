@@ -55,12 +55,23 @@ export async function fetchTransactions() {
 }
 
 export async function fetchCustomers() {
-  return delay(transactions.map((transaction, index) => ({
-    name: transaction.name,
-    email: transaction.email,
-    plan: transaction.product,
-    spend: Number((transaction.amount * (index + 2)).toFixed(2)),
-    status: index === 2 ? "At risk" : "Active",
-    joined: transaction.date
+  const customers = new Map();
+  for (const transaction of transactions) {
+    const customer = customers.get(transaction.email) ?? {
+      name: transaction.name,
+      email: transaction.email,
+      plan: transaction.product,
+      spend: 0,
+      status: "Active",
+      joined: transaction.date
+    };
+    customer.spend += transaction.amount;
+    if (transaction.status !== "Paid") customer.status = "At risk";
+    customers.set(transaction.email, customer);
+  }
+
+  return delay([...customers.values()].map((customer) => ({
+    ...customer,
+    spend: Number(customer.spend.toFixed(2))
   })));
 }

@@ -12,7 +12,11 @@ test("mock dashboard and transaction endpoints return consistent fixture data", 
 
 test("mock customers have valid spend, status, and date fields", async () => {
   const customers = await fetchCustomers();
-  assert.equal(customers.length, 36);
+  assert.equal(customers.length, 10);
+  assert.equal(new Set(customers.map((row) => row.email)).size, customers.length, "Each customer appears once");
   assert.ok(customers.every((row) => row.name && row.email && row.spend > 0 && row.joined));
   assert.ok(customers.some((row) => row.status === "At risk"));
+  const transactions = await fetchTransactions();
+  const oliviaSpend = transactions.filter((row) => row.email === "olivia.martin@example.com").reduce((sum, row) => sum + row.amount, 0);
+  assert.equal(customers.find((row) => row.email === "olivia.martin@example.com").spend, Number(oliviaSpend.toFixed(2)));
 });
