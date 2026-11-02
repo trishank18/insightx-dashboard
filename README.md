@@ -1,114 +1,110 @@
 # InsightX Dashboard
 
-InsightX is a polished, responsive revenue-intelligence SaaS dashboard created for **Internship Problem Statement 02**. It turns product, customer, and sales data into an approachable workspace for daily decision-making.
+InsightX is a responsive analytics dashboard built for **Problem Statement 02: Interactive Analytics Dashboard UI**. It brings sales, customer, and performance metrics together in a single workspace.
 
-## Requirement analysis
+## 01. Requirement analysis
 
-The supplied brief requires:
+### Features and modules from the brief
 
-- A dashboard shell with sidebar, top bar, breadcrumbs, search, profile controls, and summary cards
-- At least three interactive chart types: line, bar, and pie/donut
-- A searchable, sortable, paginated transactions table with status badges and empty states
-- Light/dark theme switching with persistence
-- Data loaded through a mock REST API with loading, invalid-response/error, and retry states
-- Responsive, accessible UI built with React, Vite, Tailwind CSS, Recharts, React Router, and Fetch-style async API logic
-- Testing, documentation, GitHub publishing, and an email submission to `admin@infionex.com`
+| Requirement | InsightX module |
+| --- | --- |
+| Dashboard layout with sidebar, top bar, and summary cards | `Shell`, `Kpi`, Overview route |
+| At least three chart types: line, bar, pie/donut | Recharts area/line, bar, and donut charts on Overview and Analytics |
+| Searchable, sortable data table with pagination | `Transactions` table on Overview |
+| Light and dark theme toggle | Theme button in the top bar; preference stored in `localStorage` |
+| Mock REST API with loading and error states | Async service functions in `src/services/api.js`; loading, retry, and error UI in data pages |
+| React, Vite, chart library, styling, HTTP client, routing | React, Vite, Recharts, Tailwind CSS, Fetch-style async service boundary, React Router |
 
-### Assumptions
+### Project tasks
 
-- The brief does not provide a production backend, authentication contract, exact brand guidelines, or a date-range API. InsightX therefore uses a curated retail-order fixture modeled on the public Sample Superstore dataset format behind an async service boundary.
-- “API integration” is demonstrated with a REST-like local mock service so the demo is reliable offline; `src/services/api.js` is the replacement point for a real Fetch/Axios client.
-- Report export is implemented as browser-generated CSV. PDF scheduling, authentication, and server-side aggregation are intentionally future enhancements.
-- GitHub repository creation and email delivery require the submitter’s GitHub account and credentials, so the repository commands are documented but not run automatically.
+1. Map each brief requirement to a screen or reusable module.
+2. Set up the React/Vite app, styling, routing, charting, and mock data layer.
+3. Define the workspace layout, responsive behavior, palette, typography, and chart/table components.
+4. Build the Overview, Analytics, Sales, Customers, Reports, and Settings routes.
+5. Add interactions: theme persistence, table search/sort/pagination, CSV export, navigation, and mobile drawer.
+6. Document setup and review the app against the brief before submission.
 
-## Features
+### Assumptions and scope
 
-- Responsive desktop sidebar and mobile navigation drawer
-- Overview KPI cards with revenue, customers, conversion, and churn trends
-- Recharts revenue area, growth line, conversion bar, and acquisition donut charts
-- Searchable, paginated transactions table with status badges
-- Dedicated Analytics, Sales, Customers, Reports, and Settings pages
-- Light/dark theme persisted in `localStorage`
-- Accessible labels, keyboard-friendly controls, loading and retry states
-- CSV report export generated locally in the browser
-- Mock REST-like service using async/await and realistic latency
-- No external API or runtime service dependency
+- No production API, authentication contract, or backend credentials were provided. The app uses deterministic local fixtures behind async functions so it works offline; replace `src/services/api.js` with a real Fetch or Axios client when an endpoint is available.
+- The brief does not define business metrics, chart dimensions, or visual branding. InsightX uses sample retail transactions and a neutral slate palette with indigo accents.
+- The brief does not define date-filter behavior. The displayed date-range control is a visual affordance; it does not currently filter server data.
+- “Sortable and searchable table” is implemented on the Overview transactions table. Search spans transaction, customer, plan, and status fields; sorting is available by column; pagination displays five rows per page.
+- A local wireframe document is used instead of a Figma mock-up so design decisions remain versioned with the code and need no external account.
 
-## Stack
+## 02. Environment and tools setup
 
-React 18 · Vite · React Router · Recharts · Lucide React · Tailwind CSS · PostCSS
+### Stack configured in this repository
 
-## Design and wireframe
+- Node.js and npm for dependency management and scripts (Node.js 18+ recommended for Vite 6)
+- React 18, Vite 6, and React Router 6
+- Recharts for responsive charts and Lucide React for icons
+- Tailwind CSS 3, PostCSS, and Autoprefixer
+- Git for version control
 
-The visual direction is a minimal SaaS analytics workspace:
-
-- **Palette:** slate neutrals for structure, indigo (`#635bff`) for primary actions, emerald for positive trends, amber/rose for attention states.
-- **Typography:** system UI sans-serif for fast loading and clear numeric hierarchy.
-- **Structure:** persistent desktop sidebar, responsive mobile drawer, sticky top bar, card-based content grid, and tables that scroll safely on small screens.
-- **Interaction:** subtle hover/focus transitions, visible status badges, responsive charts, keyboard-accessible buttons, and persisted theme preference.
-
-The wireframe outline is documented in [`docs/wireframes.md`](docs/wireframes.md).
-
-## Development plan and module checklist
-
-1. **Requirement analysis:** map the brief to routes, reusable UI components, chart modules, table behavior, API states, and submission artifacts.
-2. **Environment setup:** install Node.js, initialize the Vite project, install dependencies, and configure Tailwind/PostCSS.
-3. **UI/UX design:** establish the palette, typography, spacing, responsive breakpoints, and wireframe before implementation.
-4. **Module development:** implement the shell, theme state, mock service, overview, analytics, sales, customers, reports, settings, charts, and transactions table.
-5. **Testing/debugging:** run production builds, verify the dev server, test search/pagination/theme/navigation manually, and fix regressions before submission.
-6. **Documentation/submission:** add screenshots, push to GitHub, and email the repository/report/deployment links to `admin@infionex.com`.
-7. **Demo readiness:** use the Overview route to demonstrate KPI cards, chart tooltips, the table, theme toggle, mobile drawer, and report export.
-
-## Getting started
+The application and configuration are already present in this repository. Install dependencies and start the development server with:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open the local URL printed by Vite. Create a production build with `npm run build`, preview it with `npm run preview`, and run the project check with `npm test`.
-
-## Mock API
-
-`src/services/api.js` acts as a small local REST-like data layer. Its exported `fetchDashboard`, `fetchTransactions`, and `fetchCustomers` functions return Promises, include a short delay, and provide deterministic retail orders with products, categories, regions, dates, amounts, and payment statuses across **January 2023 through December 2025**. The fixture follows the structure of the public Tableau Sample Superstore benchmark while remaining bundled for reliable offline demos; replace this service with a real Fetch/Axios endpoint when backend access is available.
-
-## Screenshots
-
-Add screenshots of the Overview, Analytics, and mobile drawer here before submission:
-
-![Overview screenshot placeholder](docs/screenshots/overview.png)
-
-## Future improvements
-
-- Connect authentication and role-based workspaces
-- Add date-range filtering backed by server-side aggregation
-- Add saved report schedules and PDF export
-- Add richer cohort, retention, and segmentation analysis
-- Add unit and end-to-end test suites
-
-## GitHub commands
+Create a production build and preview it with:
 
 ```bash
-node --version
-npm --version
-npm install
-git init
-git add .
-git commit -m "Build InsightX analytics dashboard"
-git branch -M main
-git remote add origin https://github.com/<your-username>/insightx-dashboard.git
-git push -u origin main
+npm run build
+npm run preview
 ```
 
-## Submission
+`npm test` is currently configured as a Vite production-build check; it is not a separate unit-test suite.
 
-Replace the repository URL above with your public GitHub repository, verify the deployed build, then email the repository and deployment links to **admin@infionex.com**. Include your name, problem statement number (02), and a short list of implemented features.
+### IDE and repository
 
-## Final submission checklist
+The source is IDE-independent and can be opened in VS Code or another editor with JavaScript/React support. A GitHub remote is already configured for this project:
 
-- [ ] Add Overview, Analytics, and mobile screenshots under `docs/screenshots/`
-- [ ] Replace the placeholder GitHub remote with the public repository URL
-- [ ] Run `npm test` and confirm the production build passes
-- [ ] Push the complete code and README to GitHub
-- [ ] Email the repository link, report/documentation link, and deployment link to `admin@infionex.com`
-- [ ] Prepare a short walkthrough covering the design decisions and interactive features
+```text
+https://github.com/trishank18/insightx-dashboard
+```
+
+To inspect the remote or publish future commits, use `git remote -v` and `git push`. Creating or pushing to a repository requires an authenticated GitHub account.
+
+## 03. UI/UX design and wireframing
+
+The design uses a familiar SaaS analytics layout: persistent desktop navigation, a sticky top bar, compact KPI cards, responsive chart panels, and a transaction table. The mobile sidebar becomes a drawer, card grids collapse to fewer columns, and wide tables scroll within their own panel.
+
+- **Palette:** slate backgrounds and borders, indigo (`#635bff`) for primary actions and chart emphasis, emerald for positive states, and amber/rose for attention states.
+- **Typography:** system UI sans-serif with heavier weight for page titles and metric values.
+- **Components:** shared `Shell`, `Kpi`, loading/retry state, Recharts panels, and `Transactions` table.
+- **Accessibility:** labeled icon buttons and inputs, semantic table headings, visible control text, and keyboard-operable native buttons and links.
+
+See [docs/wireframes.md](docs/wireframes.md) for the desktop layout sketch, component map, and responsive notes.
+
+## Mock data service
+
+`src/services/api.js` exports `fetchDashboard`, `fetchTransactions`, and `fetchCustomers`. They return promises with simulated latency and deterministic retail-order fixtures spanning January 2023 through December 2025. The data follows a Sample Superstore-style shape and is bundled locally for reliable offline use.
+
+## Routes
+
+- `/` — Overview metrics, revenue chart, acquisition donut, and transactions
+- `/analytics` — revenue/customer trend and weekly conversion charts
+- `/sales` — sales KPIs and funnel
+- `/customers` — customer list
+- `/reports` — CSV export actions
+- `/settings` — workspace preferences
+
+## GitHub workflow
+
+The project remote is configured as `origin`. After reviewing changes, commit and push them with:
+
+```bash
+git add .
+git commit -m "Update InsightX dashboard"
+git push
+```
+
+## Submission checklist
+
+- [ ] Capture Overview, Analytics, and mobile screenshots under `docs/screenshots/`
+- [ ] Run `npm test` and confirm the production build check passes
+- [ ] Push the final changes to the configured GitHub repository
+- [ ] Prepare a short walkthrough of the design and interactive features
