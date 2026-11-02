@@ -1,4 +1,4 @@
-const searchableFields = ["id", "name", "email", "plan", "status"];
+const searchableFields = ["id", "productId", "name", "salesRep", "region", "product", "plan", "category", "amount", "quantity", "status", "customerType", "discount", "paymentMethod", "channel", "date"];
 const monthIndexes = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
 
 function parseDateValue(value) {
@@ -47,14 +47,21 @@ export function paginateTransactions(rows, page = 1, pageSize = 5) {
 }
 
 export function transactionsToCsv(rows) {
-  return rowsToCsv(["Transaction", "Customer", "Email", "Plan", "Amount", "Status", "Date"], rows.map((row) => ({
-    Transaction: row.id,
-    Customer: row.name,
-    Email: row.email,
-    Plan: row.plan,
-    Amount: row.amount,
-    Status: row.status,
-    Date: row.date
+  return rowsToCsv(["Sale", "Product ID", "Date", "Sales rep", "Region", "Category", "Sales amount", "Units sold", "Unit cost", "Unit price", "Customer type", "Discount", "Payment method", "Sales channel"], rows.map((row) => ({
+    Sale: row.id,
+    "Product ID": row.productId,
+    Date: row.date,
+    "Sales rep": row.salesRep,
+    Region: row.region,
+    Category: row.category,
+    "Sales amount": row.amount,
+    "Units sold": row.quantity,
+    "Unit cost": row.unitCost,
+    "Unit price": row.unitPrice,
+    "Customer type": row.customerType,
+    Discount: row.discount,
+    "Payment method": row.paymentMethod,
+    "Sales channel": row.channel
   })));
 }
 
@@ -80,18 +87,22 @@ export function monthlyRevenueCsv(transactions) {
   return rowsToCsv(["Month", "Order count", "Revenue"], summary);
 }
 
-export function customerHealthCsv(customers) {
+export function customerSegmentCsv(customers) {
   const rows = customers.map((customer) => ({
-    Customer: customer.name,
-    Email: customer.email,
-    Plan: customer.plan,
-    "Lifetime spend": customer.spend,
-    Status: customer.status,
-    Joined: customer.joined
+    Segment: customer.name,
+    "Sales count": customer.transactions,
+    Revenue: customer.revenue,
+    "Units sold": customer.units,
+    "Average discount (%)": customer.averageDiscount
   }));
-  return rowsToCsv(["Customer", "Email", "Plan", "Lifetime spend", "Status", "Joined"], rows);
+  return rowsToCsv(["Segment", "Sales count", "Revenue", "Units sold", "Average discount (%)"], rows);
 }
 
-export function acquisitionPerformanceCsv(channels) {
-  return rowsToCsv(["Channel", "Customer share (%)"], channels.map(({ name, value }) => ({ Channel: name, "Customer share (%)": value })));
+export function salesChannelPerformanceCsv(channels) {
+  return rowsToCsv(["Sales channel", "Sales records", "Revenue", "Transaction share (%)"], channels.map((channel) => ({
+    "Sales channel": channel.name,
+    "Sales records": channel.transactions,
+    Revenue: channel.revenue,
+    "Transaction share (%)": channel.share
+  })));
 }

@@ -1,16 +1,20 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { acquisitionPerformanceCsv, customerHealthCsv, filterTransactions, monthlyRevenueCsv, paginateTransactions, sortTransactions, transactionsToCsv } from "../src/services/transactions.js";
+import { customerSegmentCsv, filterTransactions, monthlyRevenueCsv, paginateTransactions, salesChannelPerformanceCsv, sortTransactions, transactionsToCsv } from "../src/services/transactions.js";
 
 const rows = [
-  { id: "TX-10", name: "Ada Lovelace", email: "ada@example.com", plan: "Studio", amount: 90, status: "Paid", date: "February 2024" },
-  { id: "TX-2", name: "Grace Hopper", email: "grace@example.com", plan: "Pro", amount: 120, status: "Pending", date: "October 2023" },
-  { id: "TX-3", name: "Lin Chen", email: "lin@example.com", plan: "Basic", amount: 40, status: "Refunded", date: "January 2024" },
+  { id: "TX-10", productId: "10", name: "Ada Lovelace", salesRep: "Ada Lovelace", region: "North", email: "ada@example.com", plan: "Studio", product: "Studio", category: "Studio", amount: 90, quantity: 2, unitCost: 10, unitPrice: 45, status: "New", customerType: "New", discount: 0.1, paymentMethod: "Cash", channel: "Online", date: "February 2024" },
+  { id: "TX-2", productId: "2", name: "Grace Hopper", salesRep: "Grace Hopper", region: "West", email: "grace@example.com", plan: "Pro", product: "Pro", category: "Pro", amount: 120, quantity: 3, unitCost: 15, unitPrice: 40, status: "Returning", customerType: "Returning", discount: 0.2, paymentMethod: "Card", channel: "Retail", date: "October 2023" },
+  { id: "TX-3", productId: "3", name: "Lin Chen", salesRep: "Lin Chen", region: "East", email: "lin@example.com", plan: "Basic", product: "Basic", category: "Basic", amount: 40, quantity: 1, unitCost: 8, unitPrice: 40, status: "New", customerType: "New", discount: 0.05, paymentMethod: "Cash", channel: "Online", date: "January 2024" },
 ];
 
 test("search is case-insensitive, trimmed, and covers table fields", () => {
   assert.deepEqual(filterTransactions(rows, "  ADA "), [rows[0]]);
-  assert.deepEqual(filterTransactions(rows, "pending"), [rows[1]]);
+  assert.deepEqual(filterTransactions(rows, "returning"), [rows[1]]);
+  assert.deepEqual(filterTransactions(rows, "north"), [rows[0]]);
+  assert.deepEqual(filterTransactions(rows, "retail"), [rows[1]]);
+  assert.deepEqual(filterTransactions(rows, "120"), [rows[1]]);
+  assert.deepEqual(filterTransactions(rows, "February 2024"), [rows[0]]);
   assert.equal(filterTransactions(rows, "").length, rows.length);
   assert.deepEqual(filterTransactions(rows, "missing"), []);
 });
@@ -30,21 +34,21 @@ test("pagination handles empty data, invalid arguments, and pages beyond the end
 });
 
 test("CSV exports valid headers, quotes commas and quotes, and handles missing values", () => {
-  const csv = transactionsToCsv([{ ...rows[0], name: 'Ada, "A" Lovelace', email: undefined }]);
-  assert.match(csv, /^"Transaction","Customer","Email"/);
+  const csv = transactionsToCsv([{ ...rows[0], salesRep: 'Ada, "A" Lovelace', region: undefined }]);
+  assert.match(csv, /^"Sale","Product ID","Date","Sales rep","Region"/);
   assert.match(csv, /"Ada, ""A"" Lovelace",""/);
   assert.match(csv, /\r\n/);
 });
 
 test("report exports have distinct schemas and monthly revenue is aggregated chronologically", () => {
   const monthly = monthlyRevenueCsv(rows);
-  const customers = customerHealthCsv([{ name: "Ada Lovelace", email: "ada@example.com", plan: "Studio", spend: 90, status: "Active", joined: "February 2024" }]);
-  const acquisition = acquisitionPerformanceCsv([{ name: "Organic search", value: 42 }, { name: "Referral", value: 18 }]);
+  const customers = customerSegmentCsv([{ name: "New", transactions: 1, revenue: 90, units: 2, averageDiscount: 10 }]);
+  const acquisition = salesChannelPerformanceCsv([{ name: "Online", transactions: 2, revenue: 130, share: 66.7 }, { name: "Retail", transactions: 1, revenue: 120, share: 33.3 }]);
 
   assert.match(monthly, /^"Month","Order count","Revenue"/);
   assert.ok(monthly.indexOf("Oct 2023") < monthly.indexOf("Jan 2024"));
   assert.match(monthly, /"Feb 2024","1","90\.00"/);
-  assert.match(customers, /^"Customer","Email","Plan","Lifetime spend","Status","Joined"/);
-  assert.match(acquisition, /^"Channel","Customer share \(\%\)"/);
+  assert.match(customers, /^"Segment","Sales count","Revenue","Units sold","Average discount \(\%\)"/);
+  assert.match(acquisition, /^"Sales channel","Sales records","Revenue","Transaction share \(\%\)"/);
   assert.equal(new Set([monthly, customers, acquisition]).size, 3);
 });

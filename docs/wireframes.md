@@ -10,12 +10,12 @@ This lightweight wireframe records the design decisions for Problem Statement 02
 |                       +------------------------------------------------------+
 | Overview              | Greeting + date range                         |
 | Analytics             +-------------+-------------+-------------+-------------+
-| Sales                 | Revenue     | Customers   | Conversion  | Churn       |
+| Sales                 | Total sales | Sales rows  | Units sold  | Avg. order  |
 | Customers             | KPI card    | KPI card    | KPI card    | KPI card    |
 | Reports               +------------------------------+-----------------------+
-| Settings              | Revenue area chart            | Acquisition donut    |
+| Settings              | Revenue area chart            | Sales channel donut  |
 |                       +------------------------------------------------------+
-| Help card             | Recent transactions + search + sort + export       |
+| Help card             | Sales records + search + sort + export             |
 |                       | Table rows                                 Pagination |
 +----------------------+------------------------------------------------------+
 ```
@@ -34,7 +34,7 @@ This lightweight wireframe records the design decisions for Problem Statement 02
 | +------------------------------+ |
 | | Revenue chart                | |
 | +------------------------------+ |
-| | Acquisition donut            | |
+| | Sales channel donut          | |
 | +------------------------------+ |
 | | Transactions (scroll panel)  | |
 +----------------------------------+
@@ -49,10 +49,10 @@ This lightweight wireframe records the design decisions for Problem Statement 02
 ## Component map
 
 - `Shell`: navigation, top bar, theme control, and responsive drawer
-- `Kpi`: reusable summary metric card with a trend state
-- `Transactions`: search, column sorting, five-row pagination, status badges, empty state, and CSV export
-- Recharts modules: revenue area/line, conversion bar, and acquisition donut charts
-- `src/services/api.js`: async mock REST boundary with deterministic fixtures and simulated latency
+- `Kpi`: reusable summary metric card with month-over-month trend
+- `Transactions`: search, column sorting, five-row pagination, customer-type badges, empty state, and CSV export
+- Recharts modules: CSV-backed revenue area/line, region/category bars, and sales-channel donut charts
+- `src/services/api.js`: asynchronous loader for the local `sales_data.csv` file
 
 ## Visual tokens
 
