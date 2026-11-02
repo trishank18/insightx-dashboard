@@ -1,4 +1,14 @@
 const searchableFields = ["id", "name", "email", "plan", "status"];
+const monthIndexes = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+
+function parseDateValue(value) {
+  const match = String(value ?? "").match(/^([A-Za-z]+)\s+(?:(\d{1,2}),?\s+)?(\d{4})$/);
+  if (match) {
+    const month = monthIndexes.indexOf(match[1].slice(0, 3).toLowerCase());
+    if (month !== -1) return Date.UTC(Number(match[3]), month, Number(match[2] || 1));
+  }
+  return Date.parse(value);
+}
 
 export function filterTransactions(rows, query = "") {
   const normalizedQuery = String(query).trim().toLocaleLowerCase();
@@ -16,7 +26,7 @@ export function sortTransactions(rows, key, direction = "asc") {
     let comparison;
 
     if (key === "date") {
-      comparison = Date.parse(left) - Date.parse(right);
+      comparison = parseDateValue(left) - parseDateValue(right);
       if (Number.isNaN(comparison)) comparison = String(left ?? "").localeCompare(String(right ?? ""));
     } else if (typeof left === "number" && typeof right === "number") {
       comparison = left - right;
@@ -37,8 +47,51 @@ export function paginateTransactions(rows, page = 1, pageSize = 5) {
 }
 
 export function transactionsToCsv(rows) {
-  const fields = ["id", "name", "email", "plan", "amount", "status", "date"];
-  const header = ["Transaction", "Customer", "Email", "Plan", "Amount", "Status", "Date"];
+  return rowsToCsv(["Transaction", "Customer", "Email", "Plan", "Amount", "Status", "Date"], rows.map((row) => ({
+    Transaction: row.id,
+    Customer: row.name,
+    Email: row.email,
+    Plan: row.plan,
+    Amount: row.amount,
+    Status: row.status,
+    Date: row.date
+  })));
+}
+
+export function rowsToCsv(headers, rows) {
   const escape = (value) => `"${String(value ?? "").replaceAll('"', '""')}"`;
-  return [header.map(escape).join(","), ...rows.map((row) => fields.map((field) => escape(row[field])).join(","))].join("\r\n");
+  return [headers.map(escape).join(","), ...rows.map((row) => headers.map((header) => escape(row[header])).join(","))].join("\r\n");
+}
+
+export function monthlyRevenueCsv(transactions) {
+  const monthly = new Map();
+  for (const transaction of transactions) {
+    const timestamp = parseDateValue(transaction.date);
+    const date = Number.isNaN(timestamp) ? null : new Date(timestamp);
+    const key = date ? `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}` : "unknown";
+    const month = date ? date.toLocaleDateString("en-US", { month: "short", year: "numeric", timeZone: "UTC" }) : "Unknown";
+    const current = monthly.get(key) ?? { Month: month, "Order count": 0, Revenue: 0 };
+    current["Order count"] += 1;
+    current.Revenue += Number(transaction.amount) || 0;
+    monthly.set(key, current);
+  }
+
+  const summary = [...monthly.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([, row]) => ({ ...row, Revenue: row.Revenue.toFixed(2) }));
+  return rowsToCsv(["Month", "Order count", "Revenue"], summary);
+}
+
+export function customerHealthCsv(customers) {
+  const rows = customers.map((customer) => ({
+    Customer: customer.name,
+    Email: customer.email,
+    Plan: customer.plan,
+    "Lifetime spend": customer.spend,
+    Status: customer.status,
+    Joined: customer.joined
+  }));
+  return rowsToCsv(["Customer", "Email", "Plan", "Lifetime spend", "Status", "Joined"], rows);
+}
+
+export function acquisitionPerformanceCsv(channels) {
+  return rowsToCsv(["Channel", "Customer share (%)"], channels.map(({ name, value }) => ({ Channel: name, "Customer share (%)": value })));
 }

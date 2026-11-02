@@ -91,7 +91,7 @@ Run the complete check with:
 npm test
 ```
 
-The automated tests cover case-insensitive search and no-match behavior, numeric/text/date sorting, empty and out-of-range pagination, CSV escaping, and consistency of mock dashboard/customer data. The same command verifies that Vite can produce a production build. The dashboard has also been opened at desktop and mobile sizes to review route rendering, chart visibility, and responsive layout.
+The automated tests cover case-insensitive search and no-match behavior, numeric/text/date sorting, empty and out-of-range pagination, CSV escaping, distinct report schemas and monthly aggregation, and consistency of mock dashboard/customer data. The same command verifies that Vite can produce a production build. The dashboard has also been opened at desktop and mobile sizes to review route rendering, chart visibility, and responsive layout.
 
 ## Screenshots
 
@@ -115,7 +115,7 @@ These screenshots show the running app at desktop and mobile sizes:
 - `/analytics` — revenue/customer trend and weekly conversion charts
 - `/sales` — sales KPIs and funnel
 - `/customers` — customer list
-- `/reports` — CSV export actions
+- `/reports` — separate monthly revenue, customer health, and acquisition performance CSV exports
 - `/settings` — workspace preferences
 
 ## GitHub workflow

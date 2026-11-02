@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { filterTransactions, paginateTransactions, sortTransactions, transactionsToCsv } from "../src/services/transactions.js";
+import { acquisitionPerformanceCsv, customerHealthCsv, filterTransactions, monthlyRevenueCsv, paginateTransactions, sortTransactions, transactionsToCsv } from "../src/services/transactions.js";
 
 const rows = [
   { id: "TX-10", name: "Ada Lovelace", email: "ada@example.com", plan: "Studio", amount: 90, status: "Paid", date: "February 2024" },
@@ -34,4 +34,17 @@ test("CSV exports valid headers, quotes commas and quotes, and handles missing v
   assert.match(csv, /^"Transaction","Customer","Email"/);
   assert.match(csv, /"Ada, ""A"" Lovelace",""/);
   assert.match(csv, /\r\n/);
+});
+
+test("report exports have distinct schemas and monthly revenue is aggregated chronologically", () => {
+  const monthly = monthlyRevenueCsv(rows);
+  const customers = customerHealthCsv([{ name: "Ada Lovelace", email: "ada@example.com", plan: "Studio", spend: 90, status: "Active", joined: "February 2024" }]);
+  const acquisition = acquisitionPerformanceCsv([{ name: "Organic search", value: 42 }, { name: "Referral", value: 18 }]);
+
+  assert.match(monthly, /^"Month","Order count","Revenue"/);
+  assert.ok(monthly.indexOf("Oct 2023") < monthly.indexOf("Jan 2024"));
+  assert.match(monthly, /"Feb 2024","1","90\.00"/);
+  assert.match(customers, /^"Customer","Email","Plan","Lifetime spend","Status","Joined"/);
+  assert.match(acquisition, /^"Channel","Customer share \(\%\)"/);
+  assert.equal(new Set([monthly, customers, acquisition]).size, 3);
 });
