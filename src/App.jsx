@@ -13,7 +13,7 @@ const chartColors = ["#ef4444", "#22c55e"];
 const chartTooltipStyle = { backgroundColor: "#fff", border: "1px solid #cbd5e1", borderRadius: "6px", padding: "8px 12px" };
 const formatCurrency = (value) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(Number(value) || 0);
 const formatCompactCurrency = (value) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", notation: "compact", maximumFractionDigits: 1 }).format(Number(value) || 0);
-const nav = [{ to: "/", label: "Overview", icon: LayoutDashboard }, { to: "/analytics", label: "Analytics", icon: TrendingUp }, { to: "/sales", label: "Sales", icon: Zap }, { to: "/customers", label: "Customers", icon: Users }, { to: "/reports", label: "Reports", icon: FileText }, { to: "/custom-analysis", label: "Custom Analysis", icon: FileUp }, { to: "/settings", label: "Settings", icon: SettingsIcon }];
+const nav = [{ to: "/dashboard", label: "Overview", icon: LayoutDashboard }, { to: "/analytics", label: "Analytics", icon: TrendingUp }, { to: "/sales", label: "Sales", icon: Zap }, { to: "/customers", label: "Customers", icon: Users }, { to: "/reports", label: "Reports", icon: FileText }, { to: "/custom-analysis", label: "Custom Analysis", icon: FileUp }, { to: "/settings", label: "Settings", icon: SettingsIcon }];
 
 function BrandMark() {
   return <svg viewBox="0 0 48 48" aria-hidden="true" className="h-9 w-9 shrink-0 rounded-xl shadow-sm">
@@ -166,6 +166,6 @@ export default function App() {
     setCustomDataset(null);
     setCustomFileName("");
   };
-  if (location.pathname === "/welcome") return <LandingPreview/>;
-  return <Shell dark={dark} setDark={setDark} open={open} setOpen={setOpen} dateRange={dateRange} setDateRange={updateDateRange}><Routes><Route path="/" element={<Overview dateRange={dateRange}/>}/><Route path="/analytics" element={<Analytics dateRange={dateRange}/>}/><Route path="/sales" element={<Sales dateRange={dateRange}/>}/><Route path="/customers" element={<Customers dateRange={dateRange}/>}/><Route path="/reports" element={<Reports dateRange={dateRange}/>}/><Route path="/custom-analysis" element={<CustomAnalysis dataset={customDataset} fileName={customFileName} onUpload={handleCustomUpload} onClear={clearCustomUpload}/>}/><Route path="/settings" element={<Settings/>}/><Route path="*" element={<Overview dateRange={dateRange}/>}/></Routes></Shell>;
+  if (location.pathname === "/" || location.pathname === "/welcome") return <LandingPreview/>;
+  return <Shell dark={dark} setDark={setDark} open={open} setOpen={setOpen} dateRange={dateRange} setDateRange={updateDateRange}><Routes><Route path="/dashboard" element={<Overview dateRange={dateRange}/>}/><Route path="/analytics" element={<Analytics dateRange={dateRange}/>}/><Route path="/sales" element={<Sales dateRange={dateRange}/>}/><Route path="/customers" element={<Customers dateRange={dateRange}/>}/><Route path="/reports" element={<Reports dateRange={dateRange}/>}/><Route path="/custom-analysis" element={<CustomAnalysis dataset={customDataset} fileName={customFileName} onUpload={handleCustomUpload} onClear={clearCustomUpload}/>}/><Route path="/settings" element={<Settings/>}/><Route path="*" element={<Overview dateRange={dateRange}/>}/></Routes></Shell>;
 }
