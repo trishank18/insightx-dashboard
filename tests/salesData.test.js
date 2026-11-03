@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { aggregateSales, parseSalesCsv } from "../src/services/salesData.js";
+import { aggregateSales, filterTransactionsByDateRange, parseSalesCsv } from "../src/services/salesData.js";
 
 const headers = "Product_ID,Sale_Date,Sales_Rep,Region,Sales_Amount,Quantity_Sold,Product_Category,Unit_Cost,Unit_Price,Customer_Type,Discount,Payment_Method,Sales_Channel";
 
@@ -32,4 +32,19 @@ test("sales aggregation derives revenue, monthly totals, channels, regions, cate
   ]);
   assert.equal(result.channels[0].share, 50);
   assert.deepEqual(result.customerSegments.map((segment) => segment.name), ["New", "Returning"]);
+});
+
+test("date range filter scopes transactions to the requested number of latest data months", () => {
+  const rows = parseSalesCsv(`${headers}\n1,2023-01-05,A,North,100,2,Food,20,50,New,0.1,Cash,Online\n2,2023-02-08,B,West,300,4,Clothing,30,75,Returning,0.2,Card,Retail\n3,2023-03-12,C,East,500,1,Food,20,50,New,0.1,Cash,Online`);
+
+  assert.deepEqual(filterTransactionsByDateRange(rows, "all"), rows);
+  assert.deepEqual(filterTransactionsByDateRange(rows, "2").map((row) => row.id), ["SALE-00002", "SALE-00003"]);
+  assert.deepEqual(filterTransactionsByDateRange(rows, "6").map((row) => row.id), rows.map((row) => row.id));
+  assert.deepEqual(filterTransactionsByDateRange(rows, "invalid"), rows);
+  assert.deepEqual(filterTransactionsByDateRange([], "2"), []);
+
+  const filteredKpis = aggregateSales(filterTransactionsByDateRange(rows, "2"));
+  assert.equal(filteredKpis.revenue, 800);
+  assert.equal(filteredKpis.transactionCount, 2);
+  assert.equal(filteredKpis.channels.reduce((total, channel) => total + channel.share, 0), 100);
 });

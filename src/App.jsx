@@ -3,6 +3,7 @@ import { NavLink, Route, Routes, useLocation } from "react-router-dom";
 import { AreaChart, Area, BarChart, Bar, CartesianGrid, Cell, LineChart, Line, PieChart, Pie, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Bell, ChevronDown, ChevronLeft, ChevronRight, Download, FileText, Filter, LayoutDashboard, Menu, Moon, MoreHorizontal, Search, Settings as SettingsIcon, Sun, TrendingDown, TrendingUp, Users, X, Zap } from "lucide-react";
 import { fetchCustomers, fetchDashboard, fetchTransactions } from "./services/api";
+import { aggregateSales, filterTransactionsByDateRange } from "./services/salesData";
 import { customerSegmentCsv, filterTransactions, monthlyRevenueCsv, paginateTransactions, salesChannelPerformanceCsv, sortTransactions, transactionsToCsv } from "./services/transactions";
 import { loadWorkspaceSettings, saveWorkspaceSettings } from "./services/preferences";
 
@@ -49,14 +50,8 @@ function Overview() {
   useEffect(load, []);
   if (!data) return <Loading error={error} retry={load}/>;
 
-  const k = data.kpis;
-  const orderedTransactions = sortTransactions(data.transactions, "date", "desc");
-  const visibleTransactions = activityRange === "all" ? data.transactions : (() => {
-    if (!orderedTransactions.length) return [];
-    const latest = new Date(`${orderedTransactions[0].date}T00:00:00Z`);
-    const start = new Date(Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth() - Number(activityRange) + 1, 1));
-    return orderedTransactions.filter((transaction) => new Date(`${transaction.date}T00:00:00Z`) >= start);
-  })();
+  const visibleTransactions = filterTransactionsByDateRange(data.transactions, activityRange);
+  const k = aggregateSales(visibleTransactions);
   const visibleChartData = chartRange === "all" ? k.monthlySales : k.monthlySales.slice(-Number(chartRange));
   const today = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" }).format(new Date());
 

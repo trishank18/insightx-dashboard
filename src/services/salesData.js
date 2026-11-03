@@ -96,6 +96,18 @@ export function parseSalesCsv(csv) {
   });
 }
 
+export function filterTransactionsByDateRange(transactions, range) {
+  if (range === "all") return transactions;
+  const months = Number(range);
+  if (!Number.isInteger(months) || months < 1 || transactions.length === 0) return transactions;
+
+  const latestTimestamp = Math.max(...transactions.map((transaction) => Date.parse(`${transaction.date}T00:00:00Z`)));
+  if (!Number.isFinite(latestTimestamp)) return transactions;
+  const latest = new Date(latestTimestamp);
+  const start = Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth() - months + 1, 1);
+  return transactions.filter((transaction) => Date.parse(`${transaction.date}T00:00:00Z`) >= start);
+}
+
 export function aggregateSales(transactions) {
   const sum = (rows, field) => rows.reduce((total, row) => total + row[field], 0);
   const by = (field) => {
