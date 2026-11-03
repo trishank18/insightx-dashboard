@@ -14,6 +14,16 @@ const formatCurrency = (value) => new Intl.NumberFormat("en-IN", { style: "curre
 const formatCompactCurrency = (value) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", notation: "compact", maximumFractionDigits: 1 }).format(Number(value) || 0);
 const nav = [{ to: "/", label: "Overview", icon: LayoutDashboard }, { to: "/analytics", label: "Analytics", icon: TrendingUp }, { to: "/sales", label: "Sales", icon: Zap }, { to: "/customers", label: "Customers", icon: Users }, { to: "/reports", label: "Reports", icon: FileText }, { to: "/custom-analysis", label: "Custom Analysis", icon: FileUp }, { to: "/settings", label: "Settings", icon: SettingsIcon }];
 
+function BrandMark() {
+  return <svg viewBox="0 0 48 48" aria-hidden="true" className="h-9 w-9 shrink-0 rounded-xl shadow-sm">
+    <defs><linearGradient id="brandMarkGradient" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#7167ff"/><stop offset="1" stopColor="#5445e8"/></linearGradient></defs>
+    <rect width="48" height="48" rx="14" fill="url(#brandMarkGradient)"/>
+    <path d="M11 35V27h5v8h-5Zm9 0V21h5v14h-5Zm9 0V16h5v19h-5Z" fill="white" fillOpacity=".8"/>
+    <path d="m11 22 8-5 7 3 11-9" fill="none" stroke="#b9f5df" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3"/>
+    <circle cx="37" cy="11" r="2.5" fill="#b9f5df"/>
+  </svg>;
+}
+
 function useTheme() { const [dark, setDark] = useState(() => localStorage.getItem("insightx-theme") === "dark"); useEffect(() => { document.documentElement.classList.toggle("dark", dark); localStorage.setItem("insightx-theme", dark ? "dark" : "light"); }, [dark]); return [dark, setDark]; }
 function downloadCsv(filename, csv) { const link = document.createElement("a"); const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" })); link.href = url; link.download = filename; link.click(); window.setTimeout(() => URL.revokeObjectURL(url), 1000); }
 function DateRangeFilter({ value, onChange }) {
@@ -30,7 +40,7 @@ function Shell({ children, dark, setDark, open, setOpen, dateRange, setDateRange
 
   return <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
     <aside className={`fixed inset-y-0 left-0 z-30 w-64 transform border-r border-slate-200 bg-white p-5 transition-transform dark:border-slate-800 dark:bg-slate-900 lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
-      <div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xl font-black tracking-tight"><span className="grid h-9 w-9 place-items-center rounded-xl bg-brand text-white"><Zap size={19} fill="currentColor" /></span>Insight<span className="text-brand">X</span></div><button className="rounded-lg p-2 lg:hidden" onClick={() => setOpen(false)} aria-label="Close navigation"><X size={18}/></button></div>
+      <div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xl font-black tracking-tight"><BrandMark/><span>Insight<span className="text-brand">X</span></span></div><button className="rounded-lg p-2 lg:hidden" onClick={() => setOpen(false)} aria-label="Close navigation"><X size={18}/></button></div>
       <p className="mb-3 mt-10 text-[11px] font-bold uppercase tracking-widest text-slate-400">Workspace</p>
       <nav className="space-y-1">{nav.map(({ to, label, icon: Icon }) => <NavLink key={to} to={to} onClick={() => setOpen(false)} className={({ isActive }) => `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold ${isActive ? "bg-indigo-50 text-brand dark:bg-indigo-950/60" : "text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"}`}><Icon size={18}/>{label}</NavLink>)}</nav>
       <div className="absolute bottom-5 left-5 right-5 rounded-2xl bg-indigo-50 p-4 dark:bg-indigo-950/50"><p className="text-sm font-bold">Need a hand?</p><p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Our team is here to help you get more from your data.</p><button aria-label="Contact support" className="mt-3 text-xs font-bold text-brand" onClick={() => setSupportOpen(true)}>Contact support <span aria-hidden>→</span></button></div>
