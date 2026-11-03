@@ -166,6 +166,6 @@ export default function App() {
     setCustomDataset(null);
     setCustomFileName("");
   };
-  if (location.pathname === "/" || location.pathname === "/welcome") return <LandingPreview/>;
+  if (["/", "/welcome", "/landing-preview.html"].includes(location.pathname)) return <LandingPreview/>;
   return <Shell dark={dark} setDark={setDark} open={open} setOpen={setOpen} dateRange={dateRange} setDateRange={updateDateRange}><Routes><Route path="/dashboard" element={<Overview dateRange={dateRange}/>}/><Route path="/analytics" element={<Analytics dateRange={dateRange}/>}/><Route path="/sales" element={<Sales dateRange={dateRange}/>}/><Route path="/customers" element={<Customers dateRange={dateRange}/>}/><Route path="/reports" element={<Reports dateRange={dateRange}/>}/><Route path="/custom-analysis" element={<CustomAnalysis dataset={customDataset} fileName={customFileName} onUpload={handleCustomUpload} onClear={clearCustomUpload}/>}/><Route path="/settings" element={<Settings/>}/><Route path="*" element={<Overview dateRange={dateRange}/>}/></Routes></Shell>;
 }
