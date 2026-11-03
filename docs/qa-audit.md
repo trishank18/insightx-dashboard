@@ -4,16 +4,16 @@
 
 ## Result
 
-The dashboard requires a user-uploaded CSV and computes its KPIs, monthly charts, regional/category/channel breakdowns, table rows, customer segments, and report exports from that file only. It does not read sample or API records. A separate public, read-only API remains available at `/api/dashboard`, `/api/transactions`, and `/api/customers`, backed by `sales_data.csv`; Vite serves these handlers in development and preview.
+The existing Overview, Analytics, Sales, Customers, and Reports pages continue using their read-only REST API data backed by `sales_data.csv`. The separate Custom Analysis route uses only the CSV uploaded into that page session and never replaces or modifies the existing workspace dataset. The public API remains available at `/api/dashboard`, `/api/transactions`, and `/api/customers`; Vite serves these handlers in development and preview.
 
 The Customers page reports New and Returning customer segments. The CSV has no individual customer IDs, names, or contact details, so the UI does not invent those fields.
 
 ## Dataset checks
 
 - REST endpoint tests verify JSON response shapes, all 1,000 records, customer segments, and `405` responses for unsupported methods.
-- REST client tests verify all three endpoint paths and handling of failed HTTP responses; the dashboard itself does not call the REST client.
+- REST client tests verify all three endpoint paths and handling of failed HTTP responses; existing dashboard pages use this API client.
 - CSV upload tests verify valid sales files, empty files, wrong extensions, oversized files, and invalid headers.
-- Dashboard state has no sample-data fallback; clearing an upload returns to the upload prompt.
+- The Custom Analysis upload parser rejects invalid and oversized CSV files. Its UI is isolated from the existing dashboard pages.
 - The REST API is public and read-only. Authentication and database persistence are outside this demo's scope.
 
 - 1,000 valid sale rows across 13 months, January 2023 to January 2024.
@@ -41,14 +41,14 @@ The Overview displayed the CSV totals. Searching for North returned **267** sale
 | Browser route and data smoke check | **Passed**, six routes at desktop width |
 | Browser errors | **None observed** |
 
-The production build still emits Vite's advisory that the minified JavaScript chunk is about 660 kB, above its 500 kB threshold. The build succeeds; route-level code splitting could reduce the initial download.
+The latest production build after adding the Custom Analysis route succeeds. Vite reports a 674.69 kB minified JavaScript chunk, above its 500 kB advisory threshold. The latest automated run passed 21/21 Node tests plus the build. This update did not include a browser-driven test of the new upload page, so its file selection and rendered interactions still need a browser check.
 
 ## Architecture and security scope
 
 - `src/services/salesData.js` parses and aggregates the CSV.
 - `api/*.js` provides read-only Vercel REST endpoints; `api/_data.js` reads and parses the CSV.
-- `src/services/api.js` is a standalone REST client; uploaded dashboard views do not use it.
-- `src/services/csvUpload.js` validates uploaded files and parses the CSV without sending file contents to the server.
+- `src/services/api.js` is the REST client used by the existing workspace pages.
+- `src/services/csvUpload.js` validates Custom Analysis uploads and parses the CSV without sending file contents to the server.
 - `vite.config.js` serves those same endpoint handlers as Vite middleware during development and preview.
 - `src/services/transactions.js` provides searching, sorting, pagination, and dataset-specific CSV reports.
 - React renders the parsed values as text; no raw HTML injection is used.

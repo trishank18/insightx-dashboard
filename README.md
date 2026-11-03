@@ -11,6 +11,7 @@ InsightX is a responsive analytics dashboard for **Problem Statement 02: Interac
 | Searchable, sortable table with pagination | Overview transaction table |
 | Light and dark themes | Top-bar toggle persisted in browser storage |
 | Data loading and error states | Async CSV loading, loading indicators, and retry actions |
+| Custom CSV analysis | Isolated Custom Analysis page with upload validation, KPIs, charts, search, pagination, and export |
 | Reports | Separate monthly revenue, customer segment, and sales channel CSV exports |
 | Workspace settings | Validated name, timezone, weekly digest, and local persistence |
 
@@ -19,6 +20,7 @@ InsightX is a responsive analytics dashboard for **Problem Statement 02: Interac
 ```text
 src/
   App.jsx                    Routes, layout, pages, charts, controls
+  CustomAnalysis.jsx         Isolated analysis of a user-uploaded CSV
   main.jsx                   React entry point and router
   index.css                  Tailwind styles and design tokens
   services/
@@ -65,9 +67,9 @@ npm audit
 
 ## Data and assumptions
 
-The dashboard analyzes only the sales CSV selected by the user. It starts empty, never loads or mixes in the bundled sample or REST API dataset, and derives charts, summary values, tables, customer segments, and CSV reports from the current upload. Separately, the project retains a public, read-only JSON API backed by `sales_data.csv`: `GET /api/dashboard`, `GET /api/transactions`, and `GET /api/customers`. Those endpoints run as Vercel serverless functions and as Vite middleware during development and preview, but the dashboard UI does not call them.
+The existing Overview, Analytics, Sales, Customers, and Reports pages continue to load their original workspace data from the read-only JSON API backed by `sales_data.csv`: `GET /api/dashboard`, `GET /api/transactions`, and `GET /api/customers`. Those endpoints run as Vercel serverless functions and as Vite middleware during development and preview.
 
-Use **Upload CSV** in the dashboard toolbar to build the analysis across all dashboard pages. Uploads must be CSV files no larger than 5 MB and use these headers: `Product_ID`, `Sale_Date`, `Sales_Rep`, `Region`, `Sales_Amount`, `Quantity_Sold`, `Product_Category`, `Unit_Cost`, `Unit_Price`, `Customer_Type`, `Discount`, `Payment_Method`, and `Sales_Channel`. Imported data stays in the current page session; it is not sent to the API or saved after refresh. Choose **Clear uploaded data** to return to the empty upload prompt.
+Use the separate **Custom Analysis** sidebar page to analyze a user-provided sales file without changing the existing workspace pages. Uploads must be CSV files no larger than 5 MB and use these headers: `Product_ID`, `Sale_Date`, `Sales_Rep`, `Region`, `Sales_Amount`, `Quantity_Sold`, `Product_Category`, `Unit_Cost`, `Unit_Price`, `Customer_Type`, `Discount`, `Payment_Method`, and `Sales_Channel`. The page derives KPIs, monthly revenue, regional and channel charts, and searchable/paginated transaction rows only from the uploaded file. Imported data stays in browser memory for the current session; it is not sent to the API or saved after refresh. Choose **Clear uploaded data** to remove it.
 
 The CSV does not contain individual customer identities, so the Customers route reports New and Returning customer segments instead of inventing names or contact details. Monetary values are displayed and labeled in Indian rupees (INR). The shared date-range control filters Overview, Analytics, Sales, Customers, and report exports locally, and the selected range persists in `localStorage`. The settings form stores preferences in `localStorage`. This is a public read-only demo API and does not include authentication, user accounts, or server-side settings sync.
 
@@ -104,8 +106,8 @@ The end-to-end audit report records the browser checks, responsive route matrix,
 - `/sales` — sales KPIs and funnel
 - `/customers` — new and returning customer segments
 - `/reports` — three distinct CSV exports
+- `/custom-analysis` — isolated analysis built only from a user-uploaded CSV
 - `/settings` — workspace preferences
 
-## Repository
 
 The configured GitHub remote is `https://github.com/trishank18/insightx-dashboard.git`. Use `git remote -v` to inspect it and `git push` to publish commits.
