@@ -2,6 +2,7 @@ import test, { after } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { fetchCustomers, fetchDashboard, fetchTransactions } from "../src/services/api.js";
+import { aggregateSales, filterTransactionsByDateRange } from "../src/services/salesData.js";
 
 const csv = await readFile(new URL("../sales_data.csv", import.meta.url), "utf8");
 let simulateFailure = false;
@@ -44,4 +45,17 @@ test("customer view aggregates real new and returning segments", async () => {
   assert.equal(customers.reduce((sum, row) => sum + row.transactions, 0), 1000);
   assert.ok(customers.every((row) => row.revenue > 0 && row.units > 0 && row.averageDiscount >= 0));
   assert.ok(customers.some((row) => row.name === "Returning"));
+});
+
+test("shared dashboard date ranges produce consistent data for all sales views", async () => {
+  const transactions = await fetchTransactions();
+  const sixMonthRows = filterTransactionsByDateRange(transactions, "6");
+  const sixMonthSummary = aggregateSales(sixMonthRows);
+
+  assert.equal(sixMonthRows.length, 432);
+  assert.equal(sixMonthSummary.transactionCount, sixMonthRows.length);
+  assert.equal(sixMonthSummary.monthlySales.length, 6);
+  assert.equal(sixMonthSummary.customerSegments.reduce((sum, segment) => sum + segment.transactions, 0), sixMonthRows.length);
+  assert.equal(sixMonthSummary.channels.reduce((sum, channel) => sum + channel.transactions, 0), sixMonthRows.length);
+  assert.ok(sixMonthSummary.revenue < aggregateSales(transactions).revenue);
 });

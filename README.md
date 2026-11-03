@@ -67,7 +67,7 @@ npm audit
 
 Dashboard data comes from the supplied root-level `sales_data.csv` file. The Vite config serves that file during development and includes it in production builds; `src/services/api.js` loads and parses it asynchronously. The file contains 1,000 sales records with dates, sales reps, regions, categories, amounts, units, customer type, discounts, payment methods, and channels. Charts, summary values, tables, customer segments, and CSV reports are derived from these rows. This is a local static data source, not a remote REST API.
 
-The CSV does not contain individual customer identities, so the Customers route reports New and Returning customer segments instead of inventing names or contact details. Monetary values are displayed and labeled in Indian rupees (INR). Date controls filter the displayed sales rows and monthly revenue chart locally. The settings form stores preferences in `localStorage`; this demo has no account or server-side settings sync.
+The CSV does not contain individual customer identities, so the Customers route reports New and Returning customer segments instead of inventing names or contact details. Monetary values are displayed and labeled in Indian rupees (INR). The shared date-range control filters Overview, Analytics, Sales, Customers, and report exports locally, and the selected range persists in `localStorage`. The settings form stores preferences in `localStorage`; this demo has no account or server-side settings sync.
 
 ## UI/UX design
 
