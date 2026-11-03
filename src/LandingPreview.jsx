@@ -1,5 +1,5 @@
-import { ArrowDownRight, ArrowRight, ArrowUpRight, BarChart3, CircleDollarSign, FileUp, LayoutDashboard, Menu, PieChart, Sparkles, TrendingUp, Users, Zap } from "lucide-react";
-import { useState } from "react";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, BarChart3, CircleDollarSign, FileUp, LayoutDashboard, Menu, Moon, PieChart, Sparkles, Sun, TrendingUp, Users, Zap } from "lucide-react";
+import { useEffect, useState } from "react";
 import "./landing.css";
 
 const featureCards = [
@@ -10,11 +10,21 @@ const featureCards = [
 
 export default function LandingPreview() {
   const [menuOpen, setMenuOpen] = useState(false);
-  return <main className="insight-page">
+  const [dark, setDark] = useState(() => {
+    try { return window.localStorage.getItem("insightx-theme") === "dark"; }
+    catch { return false; }
+  });
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+    try { window.localStorage.setItem("insightx-theme", dark ? "dark" : "light"); }
+    catch { /* The theme still works for this visit if storage is unavailable. */ }
+  }, [dark]);
+  return <main className={`insight-page${dark ? "" : " insight-light"}`}>
     <section className="insight-hero" id="home">
       <div className="insight-orb insight-orb-one"/><div className="insight-orb insight-orb-two"/>
       <header className="insight-header">
         <a className="insight-brand" href="#home" aria-label="InsightX home"><span className="insight-brand-mark"><BarChart3 size={19}/></span><span>Insight<span>X</span></span></a>
+        <button className="insight-theme-toggle" aria-label={dark ? "Switch to light theme" : "Switch to dark theme"} aria-pressed={dark} onClick={() => setDark((value) => !value)}><Moon className="insight-theme-dark-icon" size={17}/><Sun className="insight-theme-light-icon" size={17}/></button>
         <button className="insight-menu-toggle" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}><Menu size={20}/></button>
         <nav className={`insight-nav${menuOpen ? " insight-nav-open" : ""}`} aria-label="Main navigation"><a href="#features" onClick={() => setMenuOpen(false)}>Features</a><a href="#overview" onClick={() => setMenuOpen(false)}>How it works</a><a href="#insights" onClick={() => setMenuOpen(false)}>Insights</a><a className="insight-nav-cta" href="/dashboard">Open dashboard <ArrowUpRight size={15}/></a></nav>
       </header>
