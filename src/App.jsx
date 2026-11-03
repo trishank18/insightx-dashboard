@@ -7,6 +7,7 @@ import { aggregateSales, filterTransactionsByDateRange } from "./services/salesD
 import CustomAnalysis from "./CustomAnalysis";
 import { customerSegmentCsv, filterTransactions, monthlyRevenueCsv, paginateTransactions, salesChannelPerformanceCsv, sortTransactions, transactionsToCsv } from "./services/transactions";
 import { loadWorkspaceSettings, saveWorkspaceSettings } from "./services/preferences";
+import LandingPreview from "./LandingPreview";
 
 const chartColors = ["#ef4444", "#22c55e"];
 const chartTooltipStyle = { backgroundColor: "#fff", border: "1px solid #cbd5e1", borderRadius: "6px", padding: "8px 12px" };
@@ -144,6 +145,7 @@ function Settings() {
   return <Page title="Settings" subtitle="Manage your workspace preferences."><form onSubmit={save} className="card max-w-2xl p-6"><h3 className="font-bold">Workspace profile</h3><div className="mt-5 grid gap-4 sm:grid-cols-2"><label className="text-sm font-semibold">Workspace name<input type="text" aria-label="Workspace name" required maxLength={80} value={settings.workspaceName} onChange={(event) => update("workspaceName", event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 bg-transparent px-3 py-2.5 text-sm outline-none focus:border-brand dark:border-slate-700"/></label><label className="text-sm font-semibold">Timezone<select aria-label="Timezone" value={settings.timezone} onChange={(event) => update("timezone", event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 bg-transparent px-3 py-2.5 text-sm outline-none dark:border-slate-700"><option value="UTC">UTC</option><option value="America/New_York">Eastern Time (New York)</option><option value="Europe/London">Europe/London</option></select></label></div><div className="mt-6 flex items-center justify-between border-t border-slate-200 pt-5 dark:border-slate-800"><div><p className="text-sm font-semibold">Weekly digest</p><p className="text-xs text-slate-400">Receive an email summary each Monday.</p></div><input type="checkbox" checked={settings.weeklyDigest} onChange={(event) => update("weeklyDigest", event.target.checked)} aria-label="Weekly digest" className="h-5 w-5 accent-brand"/></div>{saveError && <p role="alert" className="mt-4 text-sm text-rose-600">Settings could not be saved. Check browser storage and try again.</p>}<button type="submit" className="btn mt-6 bg-brand text-white">{saved ? "Saved" : "Save changes"}</button></form></Page>;
 }
 export default function App() {
+  const location = useLocation();
   const [dark,setDark]=useTheme();
   const [open,setOpen]=useState(false);
   const [customDataset, setCustomDataset] = useState(null);
@@ -164,5 +166,6 @@ export default function App() {
     setCustomDataset(null);
     setCustomFileName("");
   };
+  if (location.pathname === "/welcome") return <LandingPreview/>;
   return <Shell dark={dark} setDark={setDark} open={open} setOpen={setOpen} dateRange={dateRange} setDateRange={updateDateRange}><Routes><Route path="/" element={<Overview dateRange={dateRange}/>}/><Route path="/analytics" element={<Analytics dateRange={dateRange}/>}/><Route path="/sales" element={<Sales dateRange={dateRange}/>}/><Route path="/customers" element={<Customers dateRange={dateRange}/>}/><Route path="/reports" element={<Reports dateRange={dateRange}/>}/><Route path="/custom-analysis" element={<CustomAnalysis dataset={customDataset} fileName={customFileName} onUpload={handleCustomUpload} onClear={clearCustomUpload}/>}/><Route path="/settings" element={<Settings/>}/><Route path="*" element={<Overview dateRange={dateRange}/>}/></Routes></Shell>;
 }

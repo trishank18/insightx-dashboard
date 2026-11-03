@@ -40,6 +40,5 @@ function apiPlugin() {
 }
 
 export default defineConfig({
-  plugins: [react(), apiPlugin()],
-  optimizeDeps: { noDiscovery: true, include: [] }
+  plugins: [react(), apiPlugin()]
 });
