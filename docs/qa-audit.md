@@ -12,6 +12,7 @@ The Customers page reports New and Returning customer segments. The CSV has no i
 
 - REST endpoint tests verify JSON response shapes, all 1,000 records, customer segments, and `405` responses for unsupported methods.
 - The browser API client tests verify all three endpoint paths and handling of failed HTTP responses.
+- CSV upload tests verify valid sales files, empty files, wrong extensions, oversized files, and invalid headers.
 - The REST API is public and read-only. Authentication and database persistence are outside this demo's scope.
 
 - 1,000 valid sale rows across 13 months, January 2023 to January 2024.
@@ -31,7 +32,7 @@ The Overview displayed the CSV totals. Searching for North returned **267** sale
 
 | Check | Result |
 | --- | --- |
-| `npm test` | **Passed**, 19/19 Node tests plus production build |
+| `npm test` | **Passed**, 21/21 Node tests plus production build |
 | REST API failure handling | **Passed**, simulated HTTP 503 and surfaced the status |
 | REST endpoint handlers | **Passed**, three GET endpoints and unsupported-method responses |
 | Production-preview API smoke check | **Passed**, all endpoints returned expected data; POST returned HTTP 405 |
