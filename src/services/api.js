@@ -1,34 +1,21 @@
-import { aggregateSales, parseSalesCsv } from "./salesData.js";
-
-const delay = (value, ms = 200) => new Promise((resolve) => setTimeout(() => resolve(value), ms));
-let salesPromise;
-
-async function loadSales() {
-  if (!salesPromise) {
-    salesPromise = fetch("/sales_data.csv")
-      .then((response) => {
-        if (!response.ok) throw new Error(`Could not load sales_data.csv (${response.status}).`);
-        return response.text();
-      })
-      .then(parseSalesCsv)
-      .catch((error) => {
-        salesPromise = undefined;
-        throw error;
-      });
+async function requestJson(path) {
+  const response = await fetch(path, { headers: { Accept: "application/json" } });
+  if (!response.ok) {
+    let details = "";
+    try { details = (await response.json()).error ?? ""; } catch { /* Use the status when no JSON error is available. */ }
+    throw new Error(details || `Request failed (${response.status}).`);
   }
-  return salesPromise;
+  return response.json();
 }
 
 export async function fetchDashboard() {
-  const transactions = await loadSales();
-  return delay({ transactions, kpis: aggregateSales(transactions) });
+  return requestJson("/api/dashboard");
 }
 
 export async function fetchTransactions() {
-  return delay(await loadSales());
+  return requestJson("/api/transactions");
 }
 
 export async function fetchCustomers() {
-  const transactions = await loadSales();
-  return delay(aggregateSales(transactions).customerSegments);
+  return requestJson("/api/customers");
 }

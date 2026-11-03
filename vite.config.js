@@ -1,32 +1,45 @@
-import { readFile, readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import dashboardHandler from "./api/dashboard.js";
+import transactionsHandler from "./api/transactions.js";
+import customersHandler from "./api/customers.js";
 
-const salesCsvPath = fileURLToPath(new URL("./sales_data.csv", import.meta.url));
+const handlers = new Map([
+  ["/api/dashboard", dashboardHandler],
+  ["/api/transactions", transactionsHandler],
+  ["/api/customers", customersHandler]
+]);
 
-function salesCsvPlugin() {
-  return {
-    name: "sales-csv-source",
-    configureServer(server) {
-      server.middlewares.use("/sales_data.csv", (request, response, next) => {
-        if (request.method !== "GET" && request.method !== "HEAD") return next();
-        readFile(salesCsvPath, (error, contents) => {
-          if (error) return next(error);
-          response.setHeader("Content-Type", "text/csv; charset=utf-8");
-          response.setHeader("Cache-Control", "no-cache");
-          response.end(contents);
-        });
-      });
-    },
-    generateBundle() {
-      this.emitFile({
-        type: "asset",
-        fileName: "sales_data.csv",
-        source: readFileSync(salesCsvPath)
-      });
+function apiPlugin() {
+  const middleware = async (request, response, next) => {
+    const pathname = new URL(request.url ?? "/", "http://localhost").pathname;
+    const handler = handlers.get(pathname);
+    if (!handler) return next();
+
+    response.setHeader("Content-Type", "application/json; charset=utf-8");
+    response.setHeader("Cache-Control", "public, max-age=60, s-maxage=60");
+    const apiResponse = {
+      status(code) { response.statusCode = code; return this; },
+      setHeader(name, value) { response.setHeader(name, value); },
+      json(payload) { response.end(JSON.stringify(payload)); return this; }
+    };
+
+    try {
+      await handler(request, apiResponse);
+    } catch {
+      response.statusCode = 500;
+      response.end(JSON.stringify({ error: "The API request failed." }));
     }
+  };
+
+  return {
+    name: "insightx-local-api",
+    configureServer(server) { server.middlewares.use(middleware); },
+    configurePreviewServer(server) { server.middlewares.use(middleware); }
   };
 }
 
-export default defineConfig({ plugins: [react(), salesCsvPlugin()] });
+export default defineConfig({
+  plugins: [react(), apiPlugin()],
+  optimizeDeps: { noDiscovery: true, include: [] }
+});

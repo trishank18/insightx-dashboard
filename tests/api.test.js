@@ -2,27 +2,29 @@ import test, { after } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { fetchCustomers, fetchDashboard, fetchTransactions } from "../src/services/api.js";
-import { aggregateSales, filterTransactionsByDateRange } from "../src/services/salesData.js";
+import { aggregateSales, filterTransactionsByDateRange, parseSalesCsv } from "../src/services/salesData.js";
 
 const csv = await readFile(new URL("../sales_data.csv", import.meta.url), "utf8");
+const transactionsFixture = parseSalesCsv(csv);
+const dashboardFixture = { transactions: transactionsFixture, kpis: aggregateSales(transactionsFixture) };
 let simulateFailure = false;
 const originalFetch = globalThis.fetch;
 globalThis.fetch = async (url) => {
-  assert.equal(url, "/sales_data.csv");
+  assert.ok(["/api/dashboard", "/api/transactions", "/api/customers"].includes(url));
   return simulateFailure
     ? new Response("Unavailable", { status: 503 })
-    : new Response(csv, { status: 200, headers: { "Content-Type": "text/csv" } });
+    : new Response(JSON.stringify(url === "/api/dashboard" ? dashboardFixture : url === "/api/customers" ? dashboardFixture.kpis.customerSegments : transactionsFixture), { status: 200, headers: { "Content-Type": "application/json" } });
 };
 after(() => { globalThis.fetch = originalFetch; });
 
-test("CSV fetch failures reject clearly and can be retried", async () => {
+test("REST API failures reject clearly and later calls can succeed", async () => {
   simulateFailure = true;
-  await assert.rejects(fetchDashboard(), /sales_data\.csv \(503\)/);
+  await assert.rejects(fetchDashboard(), /Request failed \(503\)/);
   simulateFailure = false;
   assert.equal((await fetchTransactions()).length, 1000);
 });
 
-test("dashboard and transaction data are loaded from sales_data.csv", async () => {
+test("dashboard and transaction data are loaded through their REST endpoints", async () => {
   const [dashboard, transactions] = await Promise.all([fetchDashboard(), fetchTransactions()]);
   assert.equal(transactions.length, 1000);
   assert.equal(dashboard.transactions.length, transactions.length);

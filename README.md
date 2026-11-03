@@ -65,9 +65,9 @@ npm audit
 
 ## Data and assumptions
 
-Dashboard data comes from the supplied root-level `sales_data.csv` file. The Vite config serves that file during development and includes it in production builds; `src/services/api.js` loads and parses it asynchronously. The file contains 1,000 sales records with dates, sales reps, regions, categories, amounts, units, customer type, discounts, payment methods, and channels. Charts, summary values, tables, customer segments, and CSV reports are derived from these rows. This is a local static data source, not a remote REST API.
+Dashboard data comes from a read-only JSON REST API backed by the supplied root-level `sales_data.csv` file. Vercel exposes three serverless endpoints: `GET /api/dashboard` (transactions and aggregate KPIs), `GET /api/transactions` (sales rows), and `GET /api/customers` (customer segment aggregates). The same handlers run as Vite middleware during development and preview, so the app uses the same API contract locally and in production. The dataset contains 1,000 sales records with dates, sales reps, regions, categories, amounts, units, customer type, discounts, payment methods, and channels. Charts, summary values, tables, customer segments, and CSV reports are derived from these rows.
 
-The CSV does not contain individual customer identities, so the Customers route reports New and Returning customer segments instead of inventing names or contact details. Monetary values are displayed and labeled in Indian rupees (INR). The shared date-range control filters Overview, Analytics, Sales, Customers, and report exports locally, and the selected range persists in `localStorage`. The settings form stores preferences in `localStorage`; this demo has no account or server-side settings sync.
+The CSV does not contain individual customer identities, so the Customers route reports New and Returning customer segments instead of inventing names or contact details. Monetary values are displayed and labeled in Indian rupees (INR). The shared date-range control filters Overview, Analytics, Sales, Customers, and report exports locally, and the selected range persists in `localStorage`. The settings form stores preferences in `localStorage`. This is a public read-only demo API and does not include authentication, user accounts, or server-side settings sync.
 
 ## UI/UX design
 

@@ -1,20 +1,24 @@
 # InsightX QA and data integration report
 
-**Audit date:** 2026-11-02
+**Audit date:** 2026-11-03
 
 ## Result
 
-The dashboard now reads its data from the supplied `sales_data.csv`. Vite serves the root file at `/sales_data.csv` during development and writes it into the production build. The app derives its KPIs, monthly charts, regional/category/channel breakdowns, table rows, customer segments, and report exports from the 1,000 CSV records.
+The dashboard reads its data from a read-only JSON REST API backed by `sales_data.csv`. Vercel exposes `/api/dashboard`, `/api/transactions`, and `/api/customers`; Vite serves the same handlers in development and preview. The app derives its KPIs, monthly charts, regional/category/channel breakdowns, table rows, customer segments, and report exports from the 1,000 CSV records.
 
 The Customers page reports New and Returning customer segments. The CSV has no individual customer IDs, names, or contact details, so the UI does not invent those fields.
 
 ## Dataset checks
 
+- REST endpoint tests verify JSON response shapes, all 1,000 records, customer segments, and `405` responses for unsupported methods.
+- The browser API client tests verify all three endpoint paths and handling of failed HTTP responses.
+- The REST API is public and read-only. Authentication and database persistence are outside this demo's scope.
+
 - 1,000 valid sale rows across 13 months, January 2023 to January 2024.
 - Total sales: **₹5,019,265.23**; total units sold: **25,355**. Monetary values use Indian rupees (INR).
 - Four regions, two sales channels, four product categories, and two customer segments.
-- The Vite development endpoint returned HTTP 200 and 1,001 lines including the header.
-- Production build emitted `dist/sales_data.csv` at 105.08 kB.
+- Vite production-preview API smoke checks returned 1,000 transactions from the dashboard and transactions endpoints, two customer segments, and HTTP 405 for a POST request.
+- The CSV is bundled with the Vercel functions and is no longer exposed as a static `/sales_data.csv` asset.
 - CSV parser tests cover quoted commas, CRLF, missing headers, malformed dates/numbers, and unclosed quotes.
 
 ## Browser checks
@@ -27,9 +31,10 @@ The Overview displayed the CSV totals. Searching for North returned **267** sale
 
 | Check | Result |
 | --- | --- |
-| `npm test` | **Passed**, 14/14 Node tests plus production build |
-| CSV fetch failure and retry | **Passed**, simulated HTTP 503 then successful retry |
-| Production inclusion | **Passed**, CSV emitted into `dist/` |
+| `npm test` | **Passed**, 19/19 Node tests plus production build |
+| REST API failure handling | **Passed**, simulated HTTP 503 and surfaced the status |
+| REST endpoint handlers | **Passed**, three GET endpoints and unsupported-method responses |
+| Production-preview API smoke check | **Passed**, all endpoints returned expected data; POST returned HTTP 405 |
 | `npm audit` | **0 vulnerabilities** on the installed dependency tree |
 | Browser route and data smoke check | **Passed**, six routes at desktop width |
 | Browser errors | **None observed** |
@@ -39,11 +44,12 @@ The production build still emits Vite's advisory that the minified JavaScript ch
 ## Architecture and security scope
 
 - `src/services/salesData.js` parses and aggregates the CSV.
-- `src/services/api.js` fetches the local CSV and retries cleanly after a failed load.
-- `vite.config.js` exposes only that CSV path in the development server and packages the CSV for production.
+- `api/*.js` provides read-only Vercel REST endpoints; `api/_data.js` reads and parses the CSV.
+- `src/services/api.js` fetches JSON from the REST endpoints and surfaces HTTP errors to existing loading/error states.
+- `vite.config.js` serves those same endpoint handlers as Vite middleware during development and preview.
 - `src/services/transactions.js` provides searching, sorting, pagination, and dataset-specific CSV reports.
 - React renders the parsed values as text; no raw HTML injection is used.
-- No backend, remote API, authentication, database/SQL, ML component, or external integration exists in this repository. Their CRUD, role, session, authorization, and server-security behavior cannot be tested here.
+- The mock API runs as serverless functions and is public/read-only. There is no authentication, database/SQL, ML component, or external integration; user accounts and persistent data changes are not implemented.
 
 ## Run
 
