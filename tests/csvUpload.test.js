@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { MAX_SALES_CSV_BYTES, parseSalesCsvFile } from "../src/services/csvUpload.js";
+import { MAX_SALES_CSV_BYTES, parseCsvAnalysisFile, parseSalesCsvFile } from "../src/services/csvUpload.js";
 
 const csv = [
   "Product_ID,Sale_Date,Sales_Rep,Region,Sales_Amount,Quantity_Sold,Product_Category,Unit_Cost,Unit_Price,Customer_Type,Discount,Payment_Method,Sales_Channel",
@@ -15,6 +15,13 @@ test("upload parser validates and analyzes sales CSV rows", async () => {
   assert.equal(transactions.length, 2);
   assert.equal(transactions[0].amount, 1250.5);
   assert.equal(transactions[1].customerType, "Returning");
+});
+
+test("custom analysis accepts arbitrary CSV columns and preserves their records", async () => {
+  const data = await parseCsvAnalysisFile(file("inventory.csv", "Item,Units,Warehouse\nWidget,12,North\nGadget,7,West"));
+  assert.deepEqual(data.headers, ["Item", "Units", "Warehouse"]);
+  assert.deepEqual(data.rows[0], { Item: "Widget", Units: "12", Warehouse: "North" });
+  assert.equal(data.rows.length, 2);
 });
 
 test("upload parser rejects missing files, non-CSV files, oversized files, and invalid data", async () => {

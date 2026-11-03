@@ -16,7 +16,7 @@ const columnAliases = {
 const requiredColumns = Object.keys(columnAliases);
 const normalizeHeader = (value) => String(value).replace(/^\uFEFF/, "").toLocaleLowerCase().replace(/[^a-z0-9]/g, "");
 
-function parseCsvRows(csv) {
+export function parseCsvRows(csv) {
   const rows = [];
   let row = [];
   let field = "";
@@ -56,6 +56,24 @@ function parseCsvRows(csv) {
     if (row.some((value) => value.trim() !== "")) rows.push(row);
   }
   return rows;
+}
+
+export function parseCsvTable(csv) {
+  const [rawHeaders, ...records] = parseCsvRows(csv);
+  if (!rawHeaders?.length || !records.length) throw new Error("CSV must contain a header row and at least one data row.");
+
+  const headers = rawHeaders.map((header, index) => header.trim() || `Column ${index + 1}`);
+  const counts = new Map();
+  const uniqueHeaders = headers.map((header) => {
+    const count = (counts.get(header) ?? 0) + 1;
+    counts.set(header, count);
+    return count === 1 ? header : `${header} (${count})`;
+  });
+  const rows = records.map((record, index) => {
+    if (record.slice(rawHeaders.length).some((value) => value.trim() !== "")) throw new Error(`CSV row ${index + 2} has more values than the header row.`);
+    return Object.fromEntries(uniqueHeaders.map((header, column) => [header, record[column]?.trim() ?? ""]));
+  });
+  return { headers: uniqueHeaders, rows };
 }
 
 function numericValue(value, column, rowNumber) {

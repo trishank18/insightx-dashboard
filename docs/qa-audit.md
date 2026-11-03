@@ -13,7 +13,7 @@ The Customers page reports New and Returning customer segments. The CSV has no i
 - REST endpoint tests verify JSON response shapes, all 1,000 records, customer segments, and `405` responses for unsupported methods.
 - REST client tests verify all three endpoint paths and handling of failed HTTP responses; existing dashboard pages use this API client.
 - CSV upload tests verify valid sales files, empty files, wrong extensions, oversized files, and invalid headers.
-- The Custom Analysis upload parser rejects invalid and oversized CSV files. Its UI is isolated from the existing dashboard pages.
+- Custom Analysis accepts CSVs with arbitrary headers, infers column types, and keeps uploaded records isolated from existing dashboard pages. Upload validation covers malformed and oversized files.
 - The REST API is public and read-only. Authentication and database persistence are outside this demo's scope.
 
 - 1,000 valid sale rows across 13 months, January 2023 to January 2024.
@@ -33,7 +33,7 @@ The Overview displayed the CSV totals. Searching for North returned **267** sale
 
 | Check | Result |
 | --- | --- |
-| `npm test` | **Passed**, 21/21 Node tests plus production build |
+| `npm test` | **Passed**, 23/23 Node tests plus production build |
 | REST API failure handling | **Passed**, simulated HTTP 503 and surfaced the status |
 | REST endpoint handlers | **Passed**, three GET endpoints and unsupported-method responses |
 | Production-preview API smoke check | **Passed**, all endpoints returned expected data; POST returned HTTP 405 |
@@ -41,7 +41,7 @@ The Overview displayed the CSV totals. Searching for North returned **267** sale
 | Browser route and data smoke check | **Passed**, six routes at desktop width |
 | Browser errors | **None observed** |
 
-The latest production build after adding the Custom Analysis route succeeds. Vite reports a 674.69 kB minified JavaScript chunk, above its 500 kB advisory threshold. The latest automated run passed 21/21 Node tests plus the build. This update did not include a browser-driven test of the new upload page, so its file selection and rendered interactions still need a browser check.
+The latest production build succeeds. Vite reports a 677.46 kB minified JavaScript chunk, above its 500 kB advisory threshold. The latest automated run passed 23/23 Node tests plus the build. This update did not include a browser-driven test of the upload page, so its file selection and rendered interactions still need a browser check.
 
 ## Architecture and security scope
 
