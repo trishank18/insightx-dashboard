@@ -13,6 +13,15 @@ test("CSV parser handles quoted commas, CRLF, and maps source columns to sales r
   assert.equal(sale.channel, "Online");
 });
 
+test("CSV parser accepts human-readable headers with spaces, hyphens, or different casing", () => {
+  const readableHeaders = "product id,Sale Date,Sales Rep,Region,Sales Amount,Quantity Sold,Product Category,Unit Cost,Unit Price,Customer Type,Discount,Payment Method,Sales Channel";
+  const [sale] = parseSalesCsv(`${readableHeaders}\nP-1,2024-01-04,Alex,North,1250.5,2,Office,300,625,New,0.1,Card,Online`);
+  assert.equal(sale.productId, "P-1");
+  assert.equal(sale.amount, 1250.5);
+  assert.equal(sale.quantity, 2);
+  assert.equal(sale.channel, "Online");
+});
+
 test("CSV parser rejects missing columns, invalid dates, invalid numbers, and unclosed quotes", () => {
   assert.throws(() => parseSalesCsv("Product_ID,Sale_Date\n1,2023-01-01"), /missing required columns/);
   assert.throws(() => parseSalesCsv(`${headers}\n1,2023-02-31,A,North,10,1,Food,2,3,New,0.1,Cash,Online`), /invalid Sale_Date/);

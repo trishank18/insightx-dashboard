@@ -1,8 +1,20 @@
-const requiredColumns = [
-  "Product_ID", "Sale_Date", "Sales_Rep", "Region", "Sales_Amount", "Quantity_Sold",
-  "Product_Category", "Unit_Cost", "Unit_Price", "Customer_Type", "Discount",
-  "Payment_Method", "Sales_Channel"
-];
+const columnAliases = {
+  Product_ID: ["product id", "product_id", "product-id", "sku", "item id"],
+  Sale_Date: ["sale date", "sale_date", "date", "transaction date"],
+  Sales_Rep: ["sales rep", "sales_rep", "salesperson", "sales person"],
+  Region: ["region", "territory"],
+  Sales_Amount: ["sales amount", "sales_amount", "amount", "revenue", "sales"],
+  Quantity_Sold: ["quantity sold", "quantity_sold", "quantity", "units sold", "units"],
+  Product_Category: ["product category", "product_category", "category"],
+  Unit_Cost: ["unit cost", "unit_cost", "cost per unit"],
+  Unit_Price: ["unit price", "unit_price", "price per unit"],
+  Customer_Type: ["customer type", "customer_type", "customer segment", "segment"],
+  Discount: ["discount", "discount rate"],
+  Payment_Method: ["payment method", "payment_method", "payment"],
+  Sales_Channel: ["sales channel", "sales_channel", "channel"]
+};
+const requiredColumns = Object.keys(columnAliases);
+const normalizeHeader = (value) => String(value).replace(/^\uFEFF/, "").toLocaleLowerCase().replace(/[^a-z0-9]/g, "");
 
 function parseCsvRows(csv) {
   const rows = [];
@@ -56,8 +68,12 @@ export function parseSalesCsv(csv) {
   const [headers, ...records] = parseCsvRows(csv);
   if (!headers) throw new Error("Sales CSV is empty.");
 
-  const positions = new Map(headers.map((header, index) => [header.trim(), index]));
-  const missing = requiredColumns.filter((column) => !positions.has(column));
+  const availablePositions = new Map(headers.map((header, index) => [normalizeHeader(header.trim()), index]));
+  const positions = new Map(requiredColumns.map((column) => {
+    const index = columnAliases[column].map(normalizeHeader).map((alias) => availablePositions.get(alias)).find((candidate) => candidate !== undefined);
+    return [column, index];
+  }));
+  const missing = requiredColumns.filter((column) => positions.get(column) === undefined);
   if (missing.length) throw new Error(`Sales CSV is missing required columns: ${missing.join(", ")}.`);
 
   return records.map((record, index) => {
