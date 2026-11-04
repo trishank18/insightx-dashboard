@@ -187,27 +187,22 @@ Theme, date range, and settings are stored in browser `localStorage`. They are l
 
 ## Screenshots
 
-These images are present in `docs/screenshots/` and are embedded directly from the repository.
+Screenshots below were captured from the running application, with the checked-in sample data where applicable. Each tab is shown in both light and dark mode. The populated Custom Analysis images show `sales_data.csv` selected through the actual upload flow; they are real application captures, not mockups.
 
-**Landing page** — the application landing experience with its live dashboard preview and navigation.
-
-<p align="center"><img src="docs/screenshots/landing.png" alt="InsightX landing page with dashboard preview" width="100%"></p>
-
-| Overview dashboard | Analytics view |
-| --- | --- |
-| **Overview** — KPI cards, revenue trend, and transaction workspace. | **Analytics** — visual sales breakdowns and performance metrics. |
-| <img src="docs/screenshots/overview.png" alt="InsightX overview dashboard" width="100%"> | <img src="docs/screenshots/analytics.png" alt="InsightX analytics view" width="100%"> |
-
-**Mobile layout** — responsive dashboard presentation at a narrow viewport.
-
-<p align="center"><img src="docs/screenshots/mobile.png" alt="InsightX mobile dashboard" width="62%"></p>
-
-### Recommended screenshots to add
-
-The repository currently has no verified screenshots dedicated to Custom Analysis upload/results, Reports export controls, Customers page, or Settings page. Capture those views from the running application before adding them; do not use mockups as application screenshots.
+| Tab or feature | Light mode | Dark mode |
+| --- | --- | --- |
+| **Landing page**<br>Navigation, headline, and illustrative dashboard preview. | <img src="docs/screenshots/landing-light.png" alt="InsightX landing page in light mode" width="100%"> | <img src="docs/screenshots/landing-dark.png" alt="InsightX landing page in dark mode" width="100%"> |
+| **Overview**<br>KPIs, revenue chart, channel mix, and transaction table. | <img src="docs/screenshots/overview-light.png" alt="Overview dashboard in light mode" width="100%"> | <img src="docs/screenshots/overview-dark.png" alt="Overview dashboard in dark mode" width="100%"> |
+| **Analytics**<br>Monthly trends and regional sales comparisons. | <img src="docs/screenshots/analytics-light.png" alt="Analytics tab in light mode" width="100%"> | <img src="docs/screenshots/analytics-dark.png" alt="Analytics tab in dark mode" width="100%"> |
+| **Sales**<br>Sales KPIs, regional and category charts, and transaction details. | <img src="docs/screenshots/sales-light.png" alt="Sales tab in light mode" width="100%"> | <img src="docs/screenshots/sales-dark.png" alt="Sales tab in dark mode" width="100%"> |
+| **Customers**<br>New and returning customer segment summary. | <img src="docs/screenshots/customers-light.png" alt="Customers tab in light mode" width="100%"> | <img src="docs/screenshots/customers-dark.png" alt="Customers tab in dark mode" width="100%"> |
+| **Reports**<br>CSV export cards for revenue, customer segments, and sales channels. | <img src="docs/screenshots/reports-light.png" alt="Reports tab in light mode" width="100%"> | <img src="docs/screenshots/reports-dark.png" alt="Reports tab in dark mode" width="100%"> |
+| **Custom Analysis: empty state**<br>CSV selection before a file is loaded. | <img src="docs/screenshots/custom-analysis-empty-light.png" alt="Custom Analysis empty state in light mode" width="100%"> | <img src="docs/screenshots/custom-analysis-empty-dark.png" alt="Custom Analysis empty state in dark mode" width="100%"> |
+| **Custom Analysis: results**<br>Summary cards, charts, categories, and uploaded records from the bundled sample CSV. | <img src="docs/screenshots/custom-analysis-results-light.png" alt="Custom Analysis results in light mode" width="100%"> | <img src="docs/screenshots/custom-analysis-results-dark.png" alt="Custom Analysis results in dark mode" width="100%"> |
+| **Settings**<br>Workspace name, timezone, and weekly digest preferences. | <img src="docs/screenshots/settings-light.png" alt="Settings tab in light mode" width="100%"> | <img src="docs/screenshots/settings-dark.png" alt="Settings tab in dark mode" width="100%"> |
+| **Mobile overview**<br>Responsive overview at a narrow viewport. | <img src="docs/screenshots/mobile-light.png" alt="Mobile overview in light mode" width="100%"> | <img src="docs/screenshots/mobile-dark.png" alt="Mobile overview in dark mode" width="100%"> |
 
 ---
-
 ## Project structure
 
 ```text
@@ -218,7 +213,7 @@ insightx-dashboard/
 │   ├── dashboard.js             # GET dashboard data and KPI endpoint
 │   └── transactions.js          # GET transaction collection endpoint
 ├── docs/
-│   ├── screenshots/             # Verified overview, analytics, and mobile screenshots
+│   ├── screenshots/             # Light and dark captures for every app tab and key feature
 │   ├── qa-audit.md              # Repository QA notes
 │   └── wireframes.md            # UI layout and design notes
 ├── public/
@@ -536,9 +531,4 @@ Released under the [MIT License](LICENSE). The license file names **Subramanya T
 - **Repository:** [github.com/trishank18/insightx-dashboard](https://github.com/trishank18/insightx-dashboard)
 - **Live demo:** [insightx-dashboard-bice.vercel.app](https://insightx-dashboard-bice.vercel.app/)
 - **Author:** Subramanya Trishank Reddy Mukkamalla
-
-
-
-
-
 
