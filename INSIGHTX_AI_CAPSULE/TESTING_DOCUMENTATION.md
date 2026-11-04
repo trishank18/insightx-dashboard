@@ -6,7 +6,6 @@
 |---|---|---|
 | `npm.cmd test` | PASS | Node tests 23/23; Vite production build succeeded |
 | Vite production build | PASS with advisory | `dist` emitted; JS 706.29 kB minified, over 500 kB advisory |
-| Updated screenshot capture | PASS, limited visual spot-check | Headless Edge against local Vite production preview: Overview and Analytics at 1440×1000, Overview at 390×844; overview data and charts loaded. Does not cover the full interaction matrix. |
 | `npm.cmd audit --omit=dev` | UNAVAILABLE | Registry advisory request failed; audit did not report vulnerability count |
 | Deployed URL page read | UNAVAILABLE | Web page reader could not access URL |
 | Browser route/control/console/network matrix | NOT RUN | No browser automation tool/config found in project/session |

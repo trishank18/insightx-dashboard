@@ -5,7 +5,6 @@ Status vocabulary: COMPLETED, IN PROGRESS, PENDING, BLOCKED, NEEDS VERIFICATION.
 | Priority | Task | Status | Evidence/next action |
 |---|---|---|---|
 | P0 | Create portable, source-grounded project capsule | COMPLETED | This directory created; validate links/files and commit if requested |
-| P0 | Refresh documented dashboard screenshots | COMPLETED | Captured Overview and Analytics at 1440×1000 and Overview at 390×844 from local Vite production preview on 2026-11-04; API/chart content visible |
 | P1 | Browser QA current root landing page and interactions | NEEDS VERIFICATION | Existing QA predates current landing commits; no Playwright config/tool found |
 | P1 | Browser QA Custom Analysis upload/clear/chart/search/export at desktop/mobile | NEEDS VERIFICATION | Prior audit explicitly says upload page browser workflow untested |
 | P1 | Verify deployed Vercel routes and APIs | NEEDS VERIFICATION | Web reader could not access configured public URL; retry with browser/network tooling |
