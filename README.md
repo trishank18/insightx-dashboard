@@ -87,15 +87,17 @@ The end-to-end audit report records the browser checks, responsive route matrix,
 
 ## Screenshots
 
-### Overview
+Screenshots refreshed on 2026-11-04 from the local Vite production preview.
+
+### Desktop Overview (1440 × 1000)
 
 ![InsightX Overview dashboard](docs/screenshots/overview.png)
 
-### Analytics
+### Desktop Analytics (1440 × 1000)
 
 ![InsightX Analytics charts](docs/screenshots/analytics.png)
 
-### Mobile Overview
+### Mobile Overview (390 × 844)
 
 ![InsightX mobile dashboard](docs/screenshots/mobile.png)
 
